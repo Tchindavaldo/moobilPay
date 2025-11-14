@@ -1,0 +1,1257 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MoobilPay API",
+        "description": "API complète de paiement en ligne avec Stripe et PayPal. Permet de gérer les paiements, méthodes de paiement et webhooks de manière sécurisée.",
+        "contact": {
+            "name": "Support MoobilPay",
+            "email": "tchindavaldoblair@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Serveur de développement local"
+        },
+        {
+            "url": "https://api.moobilpay.com",
+            "description": "Serveur de production"
+        }
+    ],
+    "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Inscription utilisateur",
+                "description": "Créer un nouveau compte utilisateur et retourner un token d'authentification",
+                "operationId": "register",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User registered successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "john@example.com"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|abc123def456..."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Connexion utilisateur",
+                "description": "Authentifier un utilisateur et retourner un token d'accès",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successful"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "john@example.com"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "2|xyz789abc123..."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Identifiants invalides"
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Déconnexion utilisateur",
+                "description": "Révoquer le token d'authentification actuel",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payments/paypal/success": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Retour PayPal - Paiement approuvé",
+                "description": "URL de retour après approbation du paiement PayPal",
+                "operationId": "58f45328754add28bc0efd9ec6e8375d",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "Token PayPal",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "PayerID",
+                        "in": "query",
+                        "description": "ID du payeur PayPal",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paiement approuvé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment approved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "order_id": {
+                                                    "type": "string",
+                                                    "example": "PAYID-123456"
+                                                },
+                                                "payer_id": {
+                                                    "type": "string",
+                                                    "example": "PAYER123"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payments/paypal/cancel": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Retour PayPal - Paiement annulé",
+                "description": "URL de retour après annulation du paiement PayPal",
+                "operationId": "0ae34df667d9dd6d6cf8be33164662da",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "Token PayPal",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paiement annulé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment was cancelled"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "order_id": {
+                                                    "type": "string",
+                                                    "example": "PAYID-123456"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payments": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Lister les paiements de l'utilisateur",
+                "description": "Récupère la liste paginée des paiements avec filtres optionnels",
+                "operationId": "getPayments",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filtrer par statut du paiement",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "processing",
+                                "succeeded",
+                                "failed",
+                                "canceled",
+                                "refunded"
+                            ],
+                            "example": "succeeded"
+                        }
+                    },
+                    {
+                        "name": "provider",
+                        "in": "query",
+                        "description": "Filtrer par fournisseur de paiement",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "stripe",
+                                "paypal"
+                            ],
+                            "example": "stripe"
+                        }
+                    },
+                    {
+                        "name": "from_date",
+                        "in": "query",
+                        "description": "Date de début (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2023-01-01"
+                        }
+                    },
+                    {
+                        "name": "to_date",
+                        "in": "query",
+                        "description": "Date de fin (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2023-12-31"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des paiements récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payments retrieved successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "uuid": {
+                                                        "type": "string",
+                                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                                    },
+                                                    "amount": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 29.99
+                                                    },
+                                                    "currency": {
+                                                        "type": "string",
+                                                        "example": "EUR"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "succeeded"
+                                                    },
+                                                    "provider": {
+                                                        "type": "string",
+                                                        "example": "stripe"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Achat produit"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2023-11-14T10:30:00Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Créer un nouveau paiement",
+                "description": "Initie un nouveau paiement via Stripe ou PayPal",
+                "operationId": "createPayment",
+                "requestBody": {
+                    "description": "Données du paiement à créer",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "provider",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "provider": {
+                                        "description": "Fournisseur de paiement",
+                                        "type": "string",
+                                        "enum": [
+                                            "stripe",
+                                            "paypal"
+                                        ],
+                                        "example": "stripe"
+                                    },
+                                    "amount": {
+                                        "description": "Montant du paiement en euros",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0.01,
+                                        "example": 29.99
+                                    },
+                                    "currency": {
+                                        "description": "Code devise ISO 4217 (par défaut: EUR)",
+                                        "type": "string",
+                                        "example": "EUR"
+                                    },
+                                    "description": {
+                                        "description": "Description du paiement",
+                                        "type": "string",
+                                        "example": "Achat produit premium"
+                                    },
+                                    "payment_method_id": {
+                                        "description": "ID de la méthode de paiement enregistrée",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "auto_confirm": {
+                                        "description": "Confirmer automatiquement le paiement",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "metadata": {
+                                        "description": "Métadonnées personnalisées",
+                                        "type": "object",
+                                        "example": {
+                                            "order_id": "12345",
+                                            "customer_id": "cust_123"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Paiement créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "uuid": {
+                                                    "type": "string",
+                                                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                                                },
+                                                "provider": {
+                                                    "type": "string",
+                                                    "example": "stripe"
+                                                },
+                                                "provider_payment_id": {
+                                                    "type": "string",
+                                                    "example": "pi_1234567890"
+                                                },
+                                                "amount": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 29.99
+                                                },
+                                                "currency": {
+                                                    "type": "string",
+                                                    "example": "EUR"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "requires_payment_method"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Achat produit premium"
+                                                },
+                                                "client_secret": {
+                                                    "type": "string",
+                                                    "example": "pi_1234567890_secret_abc123"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-11-14T10:30:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "amount": [
+                                                    "Le montant est requis."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to create payment"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Payment provider error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payments/{uuid}": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Détails d'un paiement",
+                "operationId": "441d476ac4eed40e33d1dbdf17659bf8",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du paiement"
+                    }
+                }
+            }
+        },
+        "/api/payments/{uuid}/confirm": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Confirmer un paiement",
+                "operationId": "412632014ac31fb496fc6254d8fab1e1",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paiement confirmé"
+                    }
+                }
+            }
+        },
+        "/api/payments/{uuid}/refund": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Rembourser un paiement",
+                "operationId": "1fb02f6689275ea4333d3e791d768240",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Remboursement effectué"
+                    }
+                }
+            }
+        },
+        "/api/payments/stats": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Statistiques des paiements",
+                "operationId": "1893e936a19d1b6b18fe19f6d18cb284",
+                "responses": {
+                    "200": {
+                        "description": "Statistiques des paiements"
+                    }
+                }
+            }
+        },
+        "/api/payment-methods": {
+            "get": {
+                "tags": [
+                    "Payment Methods"
+                ],
+                "summary": "Lister les méthodes de paiement",
+                "operationId": "a959c227d7b72f2f51a3a871ae5db980",
+                "responses": {
+                    "200": {
+                        "description": "Liste des méthodes de paiement"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Payment Methods"
+                ],
+                "summary": "Créer une méthode de paiement",
+                "operationId": "016c669cd61a6d78063d64588752f802",
+                "responses": {
+                    "201": {
+                        "description": "Méthode de paiement créée"
+                    }
+                }
+            }
+        },
+        "/api/payment-methods/{id}": {
+            "get": {
+                "tags": [
+                    "Payment Methods"
+                ],
+                "summary": "Détails d'une méthode de paiement",
+                "operationId": "fb8ba779f90c67c04d432777f690aa20",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la méthode de paiement",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de la méthode de paiement"
+                    },
+                    "404": {
+                        "description": "Méthode de paiement non trouvée"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Payment Methods"
+                ],
+                "summary": "Modifier une méthode de paiement",
+                "operationId": "477b007621815d6156c36639f5951fbd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "is_default": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Méthode de paiement modifiée"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Payment Methods"
+                ],
+                "summary": "Supprimer une méthode de paiement",
+                "operationId": "7b4e5ac6586e8decceec2d7a0f9aa1c1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Méthode de paiement supprimée"
+                    },
+                    "404": {
+                        "description": "Méthode de paiement non trouvée"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payment-methods/{id}/set-default": {
+            "post": {
+                "tags": [
+                    "Payment Methods"
+                ],
+                "summary": "Définir comme méthode de paiement par défaut",
+                "operationId": "5b067a2cfdd7b2320896ba8bcdc89b74",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Méthode définie par défaut"
+                    },
+                    "404": {
+                        "description": "Méthode de paiement non trouvée"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payments/stripe/frontend/intent": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Créer un PaymentIntent (flux frontend)",
+                "operationId": "7aa4ef289c29a8b906244b4dfa661522",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "type": "number",
+                                        "example": 29.99
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "example": "EUR"
+                                    },
+                                    "metadata": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Client secret retourné",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "payment_intent_id": {
+                                            "type": "string"
+                                        },
+                                        "client_secret": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payments/stripe/frontend/confirm": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Confirmer un PaymentIntent (flux frontend)",
+                "operationId": "aab5cdef66c648359e879eff900d4d2e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "payment_intent_id"
+                                ],
+                                "properties": {
+                                    "payment_intent_id": {
+                                        "type": "string",
+                                        "example": "pi_123"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "example": "pm_123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Statut du PaymentIntent"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Profil utilisateur",
+                "description": "Récupère les informations de l'utilisateur authentifié",
+                "operationId": "getCurrentUser",
+                "responses": {
+                    "200": {
+                        "description": "Informations utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "John Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "format": "email",
+                                            "example": "john@example.com"
+                                        },
+                                        "email_verified_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-11-14T10:30:00Z"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-11-14T10:30:00Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-11-14T10:30:00Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/webhooks/stripe": {
+            "post": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Webhook Stripe",
+                "description": "Réception des événements de paiement Stripe",
+                "operationId": "45cf3a5e72c504da57fec6e857eec011",
+                "requestBody": {
+                    "description": "Payload du webhook Stripe",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "example": "evt_1234567890"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "payment_intent.succeeded"
+                                    },
+                                    "data": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Webhook traité avec succès"
+                    },
+                    "400": {
+                        "description": "Erreur de signature ou payload invalide"
+                    }
+                }
+            }
+        },
+        "/api/webhooks/paypal": {
+            "post": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Webhook PayPal",
+                "description": "Réception des événements de paiement PayPal",
+                "operationId": "618ebbefd07820ee18d76b6c46c9ca24",
+                "requestBody": {
+                    "description": "Payload du webhook PayPal",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "example": "WH-1234567890"
+                                    },
+                                    "event_type": {
+                                        "type": "string",
+                                        "example": "PAYMENT.CAPTURE.COMPLETED"
+                                    },
+                                    "resource": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Webhook traité avec succès"
+                    },
+                    "400": {
+                        "description": "Erreur de validation du webhook"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Authentification via Laravel Sanctum. Utilisez votre token d'API.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Payments",
+            "description": "Gestion des paiements Stripe et PayPal - création, confirmation, remboursement"
+        },
+        {
+            "name": "Payment Methods",
+            "description": "Gestion des méthodes de paiement - cartes, PayPal, etc."
+        },
+        {
+            "name": "Webhooks",
+            "description": "Réception des événements de paiement des fournisseurs"
+        },
+        {
+            "name": "User",
+            "description": "Gestion du profil utilisateur"
+        },
+        {
+            "name": "Authentication",
+            "description": "Inscription, connexion et déconnexion des utilisateurs"
+        }
+    ]
+}

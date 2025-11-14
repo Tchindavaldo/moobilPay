@@ -14,6 +14,25 @@ use Stripe\Exception\SignatureVerificationException;
 
 class WebhookController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/webhooks/stripe",
+     *     summary="Webhook Stripe",
+     *     description="Réception des événements de paiement Stripe",
+     *     tags={"Webhooks"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Payload du webhook Stripe",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="string", example="evt_1234567890"),
+     *             @OA\Property(property="type", type="string", example="payment_intent.succeeded"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Webhook traité avec succès"),
+     *     @OA\Response(response=400, description="Erreur de signature ou payload invalide")
+     * )
+     */
     public function stripe(Request $request): JsonResponse
     {
         $payload = $request->getContent();
@@ -61,6 +80,25 @@ class WebhookController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/webhooks/paypal",
+     *     summary="Webhook PayPal",
+     *     description="Réception des événements de paiement PayPal",
+     *     tags={"Webhooks"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Payload du webhook PayPal",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="string", example="WH-1234567890"),
+     *             @OA\Property(property="event_type", type="string", example="PAYMENT.CAPTURE.COMPLETED"),
+     *             @OA\Property(property="resource", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Webhook traité avec succès"),
+     *     @OA\Response(response=400, description="Erreur de validation du webhook")
+     * )
+     */
     public function paypal(Request $request): JsonResponse
     {
         $payload = $request->all();

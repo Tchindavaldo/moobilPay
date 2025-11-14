@@ -3,6 +3,10 @@
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\WebhookController;
+use App\Http\Controllers\Api\PayPalController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\StripeFrontendController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,9 +21,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Routes d'authentification (publiques)
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 });
+
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'show']);
 
 // Routes publiques (webhooks)
 Route::prefix('webhooks')->group(function () {
@@ -40,6 +49,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{uuid}/refund', [PaymentController::class, 'refund'])->name('payments.refund');
     });
 
+    // Flux frontend Stripe (Payment Element)
+    Route::prefix('payments/stripe/frontend')->group(function () {
+        Route::post('/intent', [StripeFrontendController::class, 'createIntent'])->name('payments.stripe.frontend.intent');
+        Route::post('/confirm', [StripeFrontendController::class, 'confirmIntent'])->name('payments.stripe.frontend.confirm');
+    });
+
     // Routes des méthodes de paiement
     Route::prefix('payment-methods')->group(function () {
         Route::get('/', [PaymentMethodController::class, 'index'])->name('payment-methods.index');
@@ -53,24 +68,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Routes spécifiques pour les redirections PayPal
 Route::prefix('payments/paypal')->group(function () {
-    Route::get('/success', function (Request $request) {
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment approved successfully',
-            'data' => [
-                'order_id' => $request->query('token'),
-                'payer_id' => $request->query('PayerID'),
-            ],
-        ]);
-    })->name('payments.paypal.success');
-
-    Route::get('/cancel', function (Request $request) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Payment was cancelled',
-            'data' => [
-                'order_id' => $request->query('token'),
-            ],
-        ]);
-    })->name('payments.paypal.cancel');
+    Route::get('/success', [PayPalController::class, 'success'])->name('payments.paypal.success');
+    Route::get('/cancel', [PayPalController::class, 'cancel'])->name('payments.paypal.cancel');
 });

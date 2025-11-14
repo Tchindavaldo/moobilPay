@@ -19,6 +19,14 @@ class PaymentMethodController extends Controller
         $this->paymentService = $paymentService;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/payment-methods",
+     *     summary="Lister les méthodes de paiement",
+     *     tags={"Payment Methods"},
+     *     @OA\Response(response=200, description="Liste des méthodes de paiement")
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         try {
@@ -44,6 +52,14 @@ class PaymentMethodController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/payment-methods",
+     *     summary="Créer une méthode de paiement",
+     *     tags={"Payment Methods"},
+     *     @OA\Response(response=201, description="Méthode de paiement créée")
+     * )
+     */
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -83,6 +99,17 @@ class PaymentMethodController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/payment-methods/{id}",
+     *     summary="Détails d'une méthode de paiement",
+     *     tags={"Payment Methods"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer"), description="ID de la méthode de paiement"),
+     *     @OA\Response(response=200, description="Détails de la méthode de paiement"),
+     *     @OA\Response(response=404, description="Méthode de paiement non trouvée")
+     * )
+     */
     public function show(int $id): JsonResponse
     {
         try {
@@ -103,6 +130,22 @@ class PaymentMethodController extends Controller
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/payment-methods/{id}",
+     *     summary="Modifier une méthode de paiement",
+     *     tags={"Payment Methods"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="is_default", type="boolean", example=true),
+     *             @OA\Property(property="is_active", type="boolean", example=true)
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Méthode de paiement modifiée")
+     * )
+     */
     public function update(Request $request, int $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -145,6 +188,17 @@ class PaymentMethodController extends Controller
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/payment-methods/{id}",
+     *     summary="Supprimer une méthode de paiement",
+     *     tags={"Payment Methods"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Méthode de paiement supprimée"),
+     *     @OA\Response(response=404, description="Méthode de paiement non trouvée")
+     * )
+     */
     public function destroy(int $id): JsonResponse
     {
         try {
@@ -174,6 +228,17 @@ class PaymentMethodController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/payment-methods/{id}/set-default",
+     *     summary="Définir comme méthode de paiement par défaut",
+     *     tags={"Payment Methods"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Méthode définie par défaut"),
+     *     @OA\Response(response=404, description="Méthode de paiement non trouvée")
+     * )
+     */
     public function setDefault(int $id): JsonResponse
     {
         try {

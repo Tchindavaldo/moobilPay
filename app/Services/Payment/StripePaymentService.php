@@ -19,6 +19,75 @@ class StripePaymentService implements PaymentServiceInterface
         $this->stripe = new StripeClient(config('services.stripe.secret'));
     }
 
+    /**
+     * Create a PaymentIntent and return its client_secret for frontend confirmation (Payment Element flow)
+     */
+    public function createFrontendPaymentIntent(array $data): array
+    {
+        try {
+            $amountInCents = (int) ($data['amount'] * 100);
+
+            $payload = [
+                'amount' => $amountInCents,
+                'currency' => $data['currency'] ?? 'eur',
+                'metadata' => $data['metadata'] ?? [],
+                // Avoid redirect-based methods so return_url is not mandatory in backend confirmations
+                'automatic_payment_methods' => ['enabled' => true, 'allow_redirects' => 'never'],
+            ];
+
+            $pi = $this->stripe->paymentIntents->create($payload);
+
+            return [
+                'success' => true,
+                'payment_intent_id' => $pi->id,
+                'client_secret' => $pi->client_secret,
+                'status' => $pi->status,
+            ];
+        } catch (\Exception $e) {
+            Log::error('Stripe frontend PI creation failed', [
+                'error' => $e->getMessage(),
+            ]);
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Confirm a PaymentIntent using a frontend-provided payment_method (pm_...) token
+     */
+    public function confirmFrontendPaymentIntent(string $paymentIntentId, array $data): array
+    {
+        try {
+            $params = [];
+            if (!empty($data['payment_method'])) {
+                $params['payment_method'] = $data['payment_method'];
+            }
+            if (!empty($data['return_url'])) {
+                $params['return_url'] = $data['return_url'];
+            }
+
+            $pi = $this->stripe->paymentIntents->confirm($paymentIntentId, $params);
+
+            return [
+                'success' => true,
+                'payment_intent_id' => $pi->id,
+                'status' => $pi->status,
+                'response' => $pi->toArray(),
+            ];
+        } catch (\Exception $e) {
+            Log::error('Stripe frontend PI confirm failed', [
+                'payment_intent_id' => $paymentIntentId,
+                'error' => $e->getMessage(),
+            ]);
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
     public function getProvider(): string
     {
         return 'stripe';
