@@ -1,10 +1,10 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "MoobilPay API",
+        "title": "mobilWallet API",
         "description": "API complète de paiement en ligne avec Stripe et PayPal. Permet de gérer les paiements, méthodes de paiement et webhooks de manière sécurisée.",
         "contact": {
-            "name": "Support MoobilPay",
+            "name": "Support mobilWallet",
             "email": "tchindavaldoblair@gmail.com"
         },
         "version": "1.0.0"
@@ -15,7 +15,7 @@
             "description": "Serveur de développement local"
         },
         {
-            "url": "https://api.moobilpay.com",
+            "url": "https://api.mobilwallet.com",
             "description": "Serveur de production"
         }
     ],

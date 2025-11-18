@@ -5,7 +5,7 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'MoobilPay API Documentation',
+                'title' => 'mobilWallet API Documentation',
             ],
 
             'routes' => [

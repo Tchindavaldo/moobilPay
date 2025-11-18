@@ -1,4 +1,4 @@
-# API de Paiement MoobilPay
+# API de Paiement mobilWallet
 
 ## Vue d'ensemble
 
@@ -15,7 +15,7 @@ Copiez `.env.example` vers `.env` et configurez les variables suivantes :
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=moobil_pay
+DB_DATABASE=mobilwallet
 DB_USERNAME=postgres
 DB_PASSWORD=votre_mot_de_passe
 

@@ -1,4 +1,4 @@
-# MoobilPay - Plateforme de Paiement Unifiée
+# mobilWallet - Plateforme de Paiement Unifiée
 
 <p align="center">
   <strong>Une API complète de gestion des paiements en ligne supportant Stripe et PayPal</strong>
@@ -24,7 +24,7 @@
 
 ## 🎯 À propos
 
-**MoobilPay** est une plateforme de paiement moderne construite avec Laravel 12 qui offre une interface unifiée pour gérer les paiements en ligne. Elle supporte deux des plus grands fournisseurs de paiement : **Stripe** et **PayPal**.
+**mobilWallet** est une plateforme de paiement moderne construite avec Laravel 12 qui offre une interface unifiée pour gérer les paiements en ligne. Elle supporte deux des plus grands fournisseurs de paiement : **Stripe** et **PayPal**.
 
 ### Cas d'usage
 
@@ -120,7 +120,7 @@ app/
 
 ```bash
 git clone <repository-url>
-cd moobilPay
+cd mobilWallet
 ```
 
 ### 2. Installer les dépendances PHP
@@ -209,7 +209,7 @@ PAYPAL_CLIENT_SECRET=votre_client_secret
 
 #### Configuration générale
 ```env
-APP_NAME=MoobilPay
+APP_NAME=mobilWallet
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000
@@ -510,7 +510,7 @@ console.log('Remboursement effectué :', refund);
 ## 📂 Structure du projet
 
 ```
-moobilPay/
+mobilWallet/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/

@@ -1,6 +1,8 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
     "private": true,
+    "name": "mobilwallet",
+    "description": "mobilWallet - Unified Online Payment Platform with Stripe and PayPal support.",
     "type": "module",
     "scripts": {
         "build": "vite build",

@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 /**
  * @OA\Info(
- *     title="MoobilPay API",
+ *     title="mobilWallet API",
  *     version="1.0.0",
  *     description="API complète de paiement en ligne avec Stripe et PayPal. Permet de gérer les paiements, méthodes de paiement et webhooks de manière sécurisée.",
  *     @OA\Contact(
  *         email="tchindavaldoblair@gmail.com",
- *         name="Support MoobilPay"
+ *         name="Support mobilWallet"
  *     )
  * )
  * 
@@ -19,7 +19,7 @@ namespace App\Http\Controllers;
  * )
  * 
  * @OA\Server(
- *     url="https://api.moobilpay.com",
+ *     url="https://api.mobilwallet.com",
  *     description="Serveur de production"
  * )
  * 
